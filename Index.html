@@ -1,0 +1,1189 @@
+<!DOCTYPE html>
+
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="Minha Adega">
+<meta name="theme-color" content="#5B2C3F">
+<title>Minha Adega</title>
+<link rel="apple-touch-icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 180 180'%3E%3Crect width='180' height='180' rx='40' fill='%235B2C3F'/%3E%3Ctext x='90' y='125' font-size='110' text-anchor='middle'%3E🍷%3C/text%3E%3C/svg%3E">
+<style>
+  :root {
+    --wine: #5B2C3F;
+    --wine-dark: #3d1d2a;
+    --wine-light: #8a4960;
+    --gold: #c9a961;
+    --bg: #faf7f5;
+    --card: #ffffff;
+    --text: #2a1a20;
+    --muted: #8a7a80;
+    --border: #ebe2e5;
+    --green: #2d7a4f;
+    --yellow: #c98e1a;
+    --red: #c23b3b;
+    --shadow: 0 2px 8px rgba(91,44,63,0.08);
+  }
+  * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
+  html, body {
+    margin: 0; padding: 0;
+    font-family: -apple-system, BlinkMacSystemFont, "SF Pro Text", system-ui, sans-serif;
+    background: var(--bg);
+    color: var(--text);
+    font-size: 16px;
+    overscroll-behavior-y: none;
+    -webkit-font-smoothing: antialiased;
+  }
+  body {
+    padding-top: env(safe-area-inset-top);
+    padding-bottom: calc(70px + env(safe-area-inset-bottom));
+    min-height: 100vh;
+  }
+  header {
+    background: linear-gradient(135deg, var(--wine) 0%, var(--wine-dark) 100%);
+    color: white;
+    padding: 18px 20px 14px;
+    position: sticky;
+    top: 0;
+    z-index: 100;
+    box-shadow: 0 2px 12px rgba(0,0,0,0.1);
+  }
+  header h1 {
+    margin: 0;
+    font-size: 22px;
+    font-weight: 700;
+    letter-spacing: -0.3px;
+  }
+  header .sub {
+    font-size: 12px;
+    opacity: 0.75;
+    margin-top: 2px;
+  }
+  main {
+    padding: 16px;
+    max-width: 680px;
+    margin: 0 auto;
+  }
+  nav.tabs {
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    background: white;
+    border-top: 1px solid var(--border);
+    display: flex;
+    padding-bottom: env(safe-area-inset-bottom);
+    z-index: 100;
+    box-shadow: 0 -2px 10px rgba(0,0,0,0.04);
+  }
+  nav.tabs button {
+    flex: 1;
+    background: none;
+    border: none;
+    padding: 10px 4px 8px;
+    font-size: 10px;
+    color: var(--muted);
+    cursor: pointer;
+    font-family: inherit;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 3px;
+    font-weight: 600;
+    letter-spacing: 0.2px;
+  }
+  nav.tabs button .icon { font-size: 22px; }
+  nav.tabs button.active { color: var(--wine); }
+  .card {
+    background: var(--card);
+    border-radius: 14px;
+    padding: 14px 16px;
+    margin-bottom: 10px;
+    box-shadow: var(--shadow);
+    border: 1px solid var(--border);
+  }
+  .card.bottle { cursor: pointer; transition: transform 0.1s; }
+  .card.bottle:active { transform: scale(0.98); }
+  .bottle-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    gap: 10px;
+  }
+  .bottle-title {
+    font-weight: 700;
+    font-size: 16px;
+    color: var(--wine);
+    line-height: 1.25;
+  }
+  .bottle-sub {
+    font-size: 13px;
+    color: var(--muted);
+    margin-top: 2px;
+  }
+  .bottle-meta {
+    display: flex;
+    gap: 8px;
+    flex-wrap: wrap;
+    margin-top: 10px;
+    font-size: 12px;
+  }
+  .badge {
+    background: var(--bg);
+    padding: 3px 9px;
+    border-radius: 20px;
+    color: var(--wine);
+    font-weight: 600;
+    border: 1px solid var(--border);
+  }
+  .badge.stock {
+    background: var(--wine);
+    color: white;
+    border-color: var(--wine);
+  }
+  .badge.stock.empty {
+    background: #ddd;
+    color: #666;
+    border-color: #ddd;
+  }
+  .badge.window.ideal { background: #e8f5ec; color: var(--green); border-color: #c6e8d0; }
+  .badge.window.young { background: #fdf4dc; color: var(--yellow); border-color: #f2e1ac; }
+  .badge.window.past { background: #fce8e8; color: var(--red); border-color: #f2c6c6; }
+  .badge.rating { background: var(--gold); color: white; border-color: var(--gold); }
+
+.fab {
+position: fixed;
+right: 18px;
+bottom: calc(85px + env(safe-area-inset-bottom));
+width: 56px;
+height: 56px;
+border-radius: 50%;
+background: var(–wine);
+color: white;
+border: none;
+font-size: 28px;
+box-shadow: 0 4px 16px rgba(91,44,63,0.4);
+cursor: pointer;
+z-index: 90;
+font-weight: 300;
+}
+.fab:active { transform: scale(0.92); }
+
+.search-bar {
+display: flex;
+gap: 8px;
+margin-bottom: 12px;
+}
+.search-bar input {
+flex: 1;
+padding: 11px 14px;
+border: 1px solid var(–border);
+border-radius: 10px;
+font-size: 15px;
+background: white;
+font-family: inherit;
+-webkit-appearance: none;
+}
+.search-bar input:focus {
+outline: none;
+border-color: var(–wine);
+}
+.filter-pills {
+display: flex;
+gap: 6px;
+overflow-x: auto;
+padding-bottom: 8px;
+margin-bottom: 8px;
+scrollbar-width: none;
+}
+.filter-pills::-webkit-scrollbar { display: none; }
+.pill {
+padding: 7px 14px;
+border-radius: 20px;
+background: white;
+border: 1px solid var(–border);
+font-size: 13px;
+color: var(–muted);
+white-space: nowrap;
+cursor: pointer;
+font-family: inherit;
+font-weight: 600;
+}
+.pill.active {
+background: var(–wine);
+color: white;
+border-color: var(–wine);
+}
+
+/* Modal / Form */
+.modal-backdrop {
+position: fixed;
+inset: 0;
+background: rgba(30,15,20,0.55);
+z-index: 200;
+display: none;
+align-items: flex-end;
+justify-content: center;
+-webkit-backdrop-filter: blur(3px);
+backdrop-filter: blur(3px);
+}
+.modal-backdrop.open { display: flex; }
+.modal {
+background: var(–bg);
+width: 100%;
+max-width: 680px;
+max-height: 92vh;
+border-radius: 20px 20px 0 0;
+overflow-y: auto;
+padding: 20px 18px calc(24px + env(safe-area-inset-bottom));
+animation: slideUp 0.25s ease-out;
+}
+@keyframes slideUp {
+from { transform: translateY(100%); }
+to { transform: translateY(0); }
+}
+.modal h2 {
+margin: 0 0 16px;
+color: var(–wine);
+font-size: 20px;
+}
+.form-grid {
+display: grid;
+gap: 10px;
+}
+.form-row-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+label {
+display: block;
+font-size: 12px;
+font-weight: 600;
+color: var(–muted);
+margin-bottom: 4px;
+text-transform: uppercase;
+letter-spacing: 0.3px;
+}
+input, select, textarea {
+width: 100%;
+padding: 11px 13px;
+border: 1px solid var(–border);
+border-radius: 10px;
+font-size: 16px;
+background: white;
+font-family: inherit;
+color: var(–text);
+-webkit-appearance: none;
+}
+input:focus, select:focus, textarea:focus {
+outline: none;
+border-color: var(–wine);
+}
+textarea { resize: vertical; min-height: 70px; }
+.btn {
+padding: 13px 20px;
+border: none;
+border-radius: 10px;
+font-size: 15px;
+font-weight: 700;
+cursor: pointer;
+font-family: inherit;
+letter-spacing: 0.2px;
+}
+.btn-primary { background: var(–wine); color: white; }
+.btn-primary:active { background: var(–wine-dark); }
+.btn-secondary { background: white; color: var(–wine); border: 1px solid var(–border); }
+.btn-danger { background: #fff; color: var(–red); border: 1px solid #f2c6c6; }
+.btn-row {
+display: flex;
+gap: 10px;
+margin-top: 16px;
+}
+.btn-row .btn { flex: 1; }
+
+/* Detail view */
+.detail-section {
+background: white;
+border-radius: 14px;
+padding: 14px 16px;
+margin-bottom: 10px;
+border: 1px solid var(–border);
+}
+.detail-row {
+display: flex;
+justify-content: space-between;
+padding: 8px 0;
+border-bottom: 1px solid var(–border);
+font-size: 14px;
+}
+.detail-row:last-child { border-bottom: none; }
+.detail-row .k { color: var(–muted); font-weight: 600; }
+.detail-row .v { color: var(–text); font-weight: 500; text-align: right; }
+.section-title {
+font-size: 11px;
+font-weight: 700;
+color: var(–muted);
+text-transform: uppercase;
+letter-spacing: 0.6px;
+margin: 16px 0 8px 4px;
+}
+
+/* Dashboard */
+.kpi-grid {
+display: grid;
+grid-template-columns: 1fr 1fr;
+gap: 10px;
+margin-bottom: 14px;
+}
+.kpi {
+background: white;
+border: 1px solid var(–border);
+border-radius: 14px;
+padding: 14px;
+box-shadow: var(–shadow);
+}
+.kpi .label {
+font-size: 11px;
+color: var(–muted);
+text-transform: uppercase;
+letter-spacing: 0.4px;
+font-weight: 600;
+}
+.kpi .value {
+font-size: 22px;
+font-weight: 700;
+color: var(–wine);
+margin-top: 4px;
+line-height: 1.1;
+}
+.kpi .value.small { font-size: 17px; }
+.kpi .sub {
+font-size: 11px;
+color: var(–muted);
+margin-top: 2px;
+}
+.kpi .sub.green { color: var(–green); font-weight: 600; }
+.kpi .sub.red { color: var(–red); font-weight: 600; }
+
+.breakdown-list { display: flex; flex-direction: column; gap: 6px; }
+.breakdown-row {
+display: flex;
+align-items: center;
+gap: 10px;
+font-size: 13px;
+}
+.breakdown-row .name { flex: 0 0 70px; font-weight: 600; color: var(–wine); }
+.breakdown-row .bar-container {
+flex: 1;
+height: 18px;
+background: var(–bg);
+border-radius: 9px;
+overflow: hidden;
+}
+.breakdown-row .bar {
+height: 100%;
+background: linear-gradient(90deg, var(–wine) 0%, var(–wine-light) 100%);
+border-radius: 9px;
+}
+.breakdown-row .count {
+flex: 0 0 30px;
+text-align: right;
+font-weight: 700;
+color: var(–muted);
+}
+
+.empty-state {
+text-align: center;
+padding: 50px 20px;
+color: var(–muted);
+}
+.empty-state .emoji { font-size: 48px; }
+.empty-state h3 { margin: 12px 0 4px; color: var(–wine); }
+.empty-state p { font-size: 14px; margin: 0; }
+
+.history-item {
+background: white;
+border: 1px solid var(–border);
+border-radius: 12px;
+padding: 12px 14px;
+margin-bottom: 8px;
+font-size: 14px;
+}
+.history-item .date {
+font-size: 11px;
+color: var(–muted);
+font-weight: 600;
+text-transform: uppercase;
+}
+.history-item .title {
+font-weight: 700;
+color: var(–wine);
+margin-top: 2px;
+}
+.history-item .meta {
+font-size: 12px;
+color: var(–muted);
+margin-top: 4px;
+}
+.rating-stars {
+display: inline-block;
+background: var(–gold);
+color: white;
+padding: 2px 8px;
+border-radius: 10px;
+font-weight: 700;
+font-size: 12px;
+}
+.toast {
+position: fixed;
+bottom: 100px;
+left: 50%;
+transform: translateX(-50%);
+background: var(–wine-dark);
+color: white;
+padding: 10px 18px;
+border-radius: 24px;
+font-size: 13px;
+font-weight: 600;
+z-index: 300;
+opacity: 0;
+transition: opacity 0.3s;
+pointer-events: none;
+}
+.toast.show { opacity: 1; }
+
+.view { display: none; }
+.view.active { display: block; }
+
+.loading {
+text-align: center;
+padding: 40px;
+color: var(–muted);
+}
+</style>
+
+</head>
+<body>
+
+<header>
+  <h1 id="header-title">🍷 Minha Adega</h1>
+  <div class="sub" id="header-sub">Carregando...</div>
+</header>
+
+<main>
+  <!-- ADEGA -->
+  <div id="view-cellar" class="view active">
+    <div class="search-bar">
+      <input type="search" id="search" placeholder="Buscar produtor, rótulo, região...">
+    </div>
+    <div class="filter-pills" id="filter-pills">
+      <button class="pill active" data-filter="all">Todos</button>
+      <button class="pill" data-filter="stock">Em estoque</button>
+      <button class="pill" data-filter="ideal">Ideal</button>
+      <button class="pill" data-filter="young">Guardar</button>
+      <button class="pill" data-filter="past">Passando</button>
+      <button class="pill" data-filter="Tinto">Tinto</button>
+      <button class="pill" data-filter="Branco">Branco</button>
+      <button class="pill" data-filter="Espumante">Espumante</button>
+    </div>
+    <div id="bottle-list"></div>
+  </div>
+
+  <!-- CONSUMO HISTORY -->
+
+  <div id="view-history" class="view">
+    <div class="section-title">Garrafas consumidas</div>
+    <div id="history-list"></div>
+  </div>
+
+  <!-- DASHBOARD -->
+
+  <div id="view-dashboard" class="view">
+    <div id="dashboard-content"></div>
+  </div>
+
+  <!-- CONFIG -->
+
+  <div id="view-settings" class="view">
+    <div class="section-title">Dados</div>
+    <div class="card">
+      <button class="btn btn-secondary" style="width:100%;margin-bottom:8px" onclick="exportData()">📤 Exportar dados (JSON)</button>
+      <button class="btn btn-secondary" style="width:100%;margin-bottom:8px" onclick="document.getElementById('import-file').click()">📥 Importar dados</button>
+      <input type="file" id="import-file" accept=".json" style="display:none" onchange="importData(event)">
+      <button class="btn btn-secondary" style="width:100%;margin-bottom:8px" onclick="loadSamples()">🍷 Carregar exemplos</button>
+      <button class="btn btn-danger" style="width:100%" onclick="clearAll()">🗑️ Limpar tudo</button>
+    </div>
+    <div class="section-title">Sobre</div>
+    <div class="card" style="font-size:13px;color:var(--muted);line-height:1.5">
+      <strong style="color:var(--wine)">Minha Adega</strong> é um PWA — um app web que funciona offline.<br><br>
+      <strong>Para instalar no iPhone:</strong><br>
+      1. Abra esta página no Safari<br>
+      2. Toque no botão Compartilhar (quadrado com seta)<br>
+      3. Role e escolha "Adicionar à Tela de Início"<br>
+      4. Pronto — vira um ícone no seu celular<br><br>
+      Os dados ficam salvos no dispositivo. Use "Exportar" para fazer backup.
+    </div>
+  </div>
+</main>
+
+<button class="fab" id="fab" onclick="openForm()">+</button>
+
+<nav class="tabs">
+  <button class="active" data-view="cellar"><span class="icon">🍷</span>Adega</button>
+  <button data-view="history"><span class="icon">📖</span>Histórico</button>
+  <button data-view="dashboard"><span class="icon">📊</span>Stats</button>
+  <button data-view="settings"><span class="icon">⚙️</span>Config</button>
+</nav>
+
+<!-- MODAL: Add/Edit bottle -->
+
+<div class="modal-backdrop" id="modal-form">
+  <div class="modal">
+    <h2 id="form-title">Novo Vinho</h2>
+    <div class="form-grid">
+      <div class="form-row-2">
+        <div><label>Produtor *</label><input id="f-producer" type="text"></div>
+        <div><label>Safra</label><input id="f-vintage" type="number" min="1900" max="2100"></div>
+      </div>
+      <div><label>Rótulo *</label><input id="f-label" type="text"></div>
+      <div class="form-row-2">
+        <div><label>Tipo</label>
+          <select id="f-type">
+            <option value="">—</option>
+            <option>Tinto</option><option>Branco</option><option>Rosé</option>
+            <option>Espumante</option><option>Sobremesa</option>
+            <option>Fortificado</option><option>Laranja</option>
+          </select>
+        </div>
+        <div><label>Tamanho</label>
+          <select id="f-size">
+            <option>750ml</option><option>375ml</option><option>187ml</option>
+            <option>1.5L Magnum</option><option>3L Jeroboam</option><option>5L</option>
+          </select>
+        </div>
+      </div>
+      <div class="form-row-2">
+        <div><label>País</label>
+          <select id="f-country">
+            <option value="">—</option>
+            <option>Brasil</option><option>Argentina</option><option>Chile</option>
+            <option>Uruguai</option><option>França</option><option>Itália</option>
+            <option>Espanha</option><option>Portugal</option><option>Alemanha</option>
+            <option>Áustria</option><option>EUA</option><option>Austrália</option>
+            <option>Nova Zelândia</option><option>África do Sul</option>
+          </select>
+        </div>
+        <div><label>Região</label><input id="f-region" type="text"></div>
+      </div>
+      <div><label>Uva(s)</label><input id="f-grape" type="text" placeholder="Ex: Malbec, Cabernet"></div>
+      <div class="form-row-2">
+        <div><label>Qtd Comprada *</label><input id="f-qty" type="number" min="1" value="1"></div>
+        <div><label>Local</label>
+          <select id="f-location">
+            <option>Adega Climatizada</option><option>Adega Comum</option>
+            <option>Geladeira</option><option>Despensa</option><option>Outro</option>
+          </select>
+        </div>
+      </div>
+      <div class="form-row-2">
+        <div><label>Preço Pago (R$)</label><input id="f-price" type="number" min="0" step="0.01"></div>
+        <div><label>Valor Atual (R$)</label><input id="f-current" type="number" min="0" step="0.01"></div>
+      </div>
+      <div class="form-row-2">
+        <div><label>Beber de</label><input id="f-drinkfrom" type="date"></div>
+        <div><label>Beber até</label><input id="f-drinkto" type="date"></div>
+      </div>
+      <div><label>Notas pessoais</label><textarea id="f-notes"></textarea></div>
+    </div>
+    <div class="btn-row">
+      <button class="btn btn-secondary" onclick="closeForm()">Cancelar</button>
+      <button class="btn btn-primary" onclick="saveBottle()">Salvar</button>
+    </div>
+  </div>
+</div>
+
+<!-- MODAL: Bottle detail -->
+
+<div class="modal-backdrop" id="modal-detail">
+  <div class="modal" id="detail-content"></div>
+</div>
+
+<!-- MODAL: Consume -->
+
+<div class="modal-backdrop" id="modal-consume">
+  <div class="modal">
+    <h2>🥂 Registrar Consumo</h2>
+    <div id="consume-bottle-info" style="margin-bottom:14px;padding:12px;background:white;border-radius:10px;border:1px solid var(--border)"></div>
+    <div class="form-grid">
+      <div class="form-row-2">
+        <div><label>Data</label><input id="c-date" type="date"></div>
+        <div><label>Quantidade</label><input id="c-qty" type="number" min="1" value="1"></div>
+      </div>
+      <div><label>Ocasião</label><input id="c-occasion" type="text" placeholder="Ex: Jantar, Aniversário"></div>
+      <div><label>Com quem</label><input id="c-with" type="text"></div>
+      <div><label>Local</label><input id="c-place" type="text"></div>
+      <div><label>Nota (0-100)</label><input id="c-rating" type="number" min="0" max="100" placeholder="Opcional"></div>
+      <div><label>Comentários de degustação</label><textarea id="c-comments" placeholder="Aromas, paladar, impressões..."></textarea></div>
+    </div>
+    <div class="btn-row">
+      <button class="btn btn-secondary" onclick="closeConsume()">Cancelar</button>
+      <button class="btn btn-primary" onclick="saveConsume()">Registrar</button>
+    </div>
+  </div>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script>
+// ============ STATE & STORAGE ============
+let bottles = [];
+let consumptions = [];
+let currentFilter = 'all';
+let searchTerm = '';
+let editingId = null;
+let consumingId = null;
+
+async function loadData() {
+  try {
+    if (window.storage) {
+      const b = await window.storage.get('bottles').catch(() => null);
+      const c = await window.storage.get('consumptions').catch(() => null);
+      bottles = b ? JSON.parse(b.value) : [];
+      consumptions = c ? JSON.parse(c.value) : [];
+    } else {
+      const b = localStorage.getItem('bottles');
+      const c = localStorage.getItem('consumptions');
+      bottles = b ? JSON.parse(b) : [];
+      consumptions = c ? JSON.parse(c) : [];
+    }
+  } catch (e) {
+    bottles = []; consumptions = [];
+  }
+  if (bottles.length === 0) await loadSamples(true);
+  render();
+}
+
+async function saveData() {
+  try {
+    if (window.storage) {
+      await window.storage.set('bottles', JSON.stringify(bottles));
+      await window.storage.set('consumptions', JSON.stringify(consumptions));
+    } else {
+      localStorage.setItem('bottles', JSON.stringify(bottles));
+      localStorage.setItem('consumptions', JSON.stringify(consumptions));
+    }
+  } catch (e) { console.error(e); }
+}
+
+async function loadSamples(silent = false) {
+  bottles = [
+    { id: uid(), producer: 'Pizzato', label: 'DNA 99 Single Vineyard', vintage: 2019, type: 'Tinto', country: 'Brasil', region: 'Vale dos Vinhedos', grape: 'Merlot', size: '750ml', qty: 6, price: 320, current: 380, drinkFrom: '2024-01-01', drinkTo: '2029-12-31', location: 'Adega Climatizada', notes: 'Ícone brasileiro' },
+    { id: uid(), producer: 'Catena Zapata', label: 'Malbec Argentino', vintage: 2020, type: 'Tinto', country: 'Argentina', region: 'Mendoza', grape: 'Malbec', size: '750ml', qty: 12, price: 180, current: 200, drinkFrom: '2024-06-01', drinkTo: '2030-12-31', location: 'Adega Climatizada', notes: '' },
+    { id: uid(), producer: 'Dom Pérignon', label: 'Vintage', vintage: 2013, type: 'Espumante', country: 'França', region: 'Champagne', grape: 'Chardonnay/Pinot Noir', size: '750ml', qty: 2, price: 2200, current: 2800, drinkFrom: '2023-01-01', drinkTo: '2035-12-31', location: 'Adega Climatizada', notes: 'Aniversário' },
+    { id: uid(), producer: 'Château Ausone', label: 'Grand Cru Classé', vintage: 2015, type: 'Tinto', country: 'França', region: 'Saint-Émilion', grape: 'Merlot/Cabernet Franc', size: '750ml', qty: 3, price: 6500, current: 8500, drinkFrom: '2028-01-01', drinkTo: '2050-12-31', location: 'Adega Climatizada', notes: 'Guarda longa' },
+    { id: uid(), producer: 'Guigal', label: 'Côtes du Rhône', vintage: 2021, type: 'Tinto', country: 'França', region: 'Rhône', grape: 'Syrah/Grenache', size: '750ml', qty: 12, price: 180, current: 180, drinkFrom: '2024-01-01', drinkTo: '2028-12-31', location: 'Adega Comum', notes: '' },
+  ];
+  consumptions = [];
+  await saveData();
+  if (!silent) { render(); toast('Exemplos carregados'); }
+}
+
+function uid() { return Date.now().toString(36) + Math.random().toString(36).slice(2, 8); }
+
+// ============ HELPERS ============
+function consumedCount(bottleId) {
+  return consumptions.filter(c => c.bottleId === bottleId).reduce((s, c) => s + (c.qty || 0), 0);
+}
+function inStock(b) { return Math.max(0, (b.qty || 0) - consumedCount(b.id)); }
+function windowStatus(b) {
+  if (!b.drinkFrom && !b.drinkTo) return null;
+  const today = new Date().toISOString().slice(0, 10);
+  if (b.drinkFrom && today < b.drinkFrom) return 'young';
+  if (b.drinkTo && today > b.drinkTo) return 'past';
+  return 'ideal';
+}
+function avgRating(bottleId) {
+  const rs = consumptions.filter(c => c.bottleId === bottleId && c.rating != null && c.rating !== '').map(c => Number(c.rating));
+  if (rs.length === 0) return null;
+  return rs.reduce((a, b) => a + b, 0) / rs.length;
+}
+function fmtBRL(n) {
+  if (n == null || n === '' || isNaN(n)) return '—';
+  return 'R$ ' + Number(n).toLocaleString('pt-BR', { minimumFractionDigits: 0, maximumFractionDigits: 2 });
+}
+function fmtDate(s) {
+  if (!s) return '—';
+  const [y, m, d] = s.split('-');
+  return `${d}/${m}/${y}`;
+}
+
+// ============ RENDER ============
+function render() {
+  renderCellar();
+  renderHistory();
+  renderDashboard();
+  updateHeader();
+}
+
+function updateHeader() {
+  const view = document.querySelector('.view.active').id;
+  const titles = {
+    'view-cellar': ['🍷 Minha Adega', `${bottles.length} rótulos · ${bottles.reduce((s, b) => s + inStock(b), 0)} garrafas em estoque`],
+    'view-history': ['📖 Histórico', `${consumptions.length} registros de consumo`],
+    'view-dashboard': ['📊 Estatísticas', 'Visão geral da coleção'],
+    'view-settings': ['⚙️ Configurações', 'Backup e preferências'],
+  };
+  const [title, sub] = titles[view] || ['🍷 Minha Adega', ''];
+  document.getElementById('header-title').textContent = title;
+  document.getElementById('header-sub').textContent = sub;
+}
+
+function renderCellar() {
+  const list = document.getElementById('bottle-list');
+  let filtered = bottles.slice();
+
+  if (searchTerm) {
+    const q = searchTerm.toLowerCase();
+    filtered = filtered.filter(b =>
+      (b.producer || '').toLowerCase().includes(q) ||
+      (b.label || '').toLowerCase().includes(q) ||
+      (b.region || '').toLowerCase().includes(q) ||
+      (b.country || '').toLowerCase().includes(q) ||
+      (b.grape || '').toLowerCase().includes(q)
+    );
+  }
+
+  if (currentFilter === 'stock') filtered = filtered.filter(b => inStock(b) > 0);
+  else if (currentFilter === 'ideal') filtered = filtered.filter(b => windowStatus(b) === 'ideal' && inStock(b) > 0);
+  else if (currentFilter === 'young') filtered = filtered.filter(b => windowStatus(b) === 'young');
+  else if (currentFilter === 'past') filtered = filtered.filter(b => windowStatus(b) === 'past' && inStock(b) > 0);
+  else if (['Tinto', 'Branco', 'Espumante', 'Rosé'].includes(currentFilter)) {
+    filtered = filtered.filter(b => b.type === currentFilter);
+  }
+
+  filtered.sort((a, b) => (a.producer || '').localeCompare(b.producer || ''));
+
+  if (filtered.length === 0) {
+    list.innerHTML = `<div class="empty-state"><div class="emoji">🍷</div><h3>Nenhuma garrafa</h3><p>Toque em + para adicionar seu primeiro vinho</p></div>`;
+    return;
+  }
+
+  list.innerHTML = filtered.map(b => {
+    const stock = inStock(b);
+    const win = windowStatus(b);
+    const winLabel = { ideal: 'Ideal', young: 'Guardar', past: 'Passando' }[win];
+    const rating = avgRating(b.id);
+    return `
+      <div class="card bottle" onclick="showDetail('${b.id}')">
+        <div class="bottle-header">
+          <div>
+            <div class="bottle-title">${escapeHtml(b.producer)} ${b.vintage ? '· ' + b.vintage : ''}</div>
+            <div class="bottle-sub">${escapeHtml(b.label || '')}</div>
+            <div class="bottle-sub">${escapeHtml([b.region, b.country].filter(Boolean).join(', '))}</div>
+          </div>
+          <span class="badge stock ${stock === 0 ? 'empty' : ''}">${stock}/${b.qty}</span>
+        </div>
+        <div class="bottle-meta">
+          ${b.type ? `<span class="badge">${b.type}</span>` : ''}
+          ${b.grape ? `<span class="badge">${escapeHtml(b.grape)}</span>` : ''}
+          ${win ? `<span class="badge window ${win}">${winLabel}</span>` : ''}
+          ${rating != null ? `<span class="badge rating">★ ${rating.toFixed(1)}</span>` : ''}
+        </div>
+      </div>
+    `;
+  }).join('');
+}
+
+function renderHistory() {
+  const list = document.getElementById('history-list');
+  if (consumptions.length === 0) {
+    list.innerHTML = `<div class="empty-state"><div class="emoji">📖</div><h3>Sem registros</h3><p>Quando consumir uma garrafa, ela aparecerá aqui</p></div>`;
+    return;
+  }
+  const sorted = consumptions.slice().sort((a, b) => (b.date || '').localeCompare(a.date || ''));
+  list.innerHTML = sorted.map(c => {
+    const b = bottles.find(x => x.id === c.bottleId);
+    const title = b ? `${b.producer} ${b.vintage || ''} — ${b.label}` : 'Vinho removido';
+    const parts = [c.occasion, c.withWhom, c.place].filter(Boolean).join(' · ');
+    return `
+      <div class="history-item">
+        <div class="date">${fmtDate(c.date)} · ${c.qty} garrafa${c.qty > 1 ? 's' : ''}</div>
+        <div class="title">${escapeHtml(title)}</div>
+        ${parts ? `<div class="meta">${escapeHtml(parts)}</div>` : ''}
+        ${c.rating ? `<div class="meta"><span class="rating-stars">★ ${c.rating}</span></div>` : ''}
+        ${c.comments ? `<div class="meta">${escapeHtml(c.comments)}</div>` : ''}
+      </div>
+    `;
+  }).join('');
+}
+
+function renderDashboard() {
+  const totalBottles = bottles.reduce((s, b) => s + inStock(b), 0);
+  const totalConsumed = consumptions.reduce((s, c) => s + (c.qty || 0), 0);
+  const invested = bottles.reduce((s, b) => s + ((b.price || 0) * (b.qty || 0)), 0);
+  const currentValue = bottles.reduce((s, b) => s + (((b.current || b.price) || 0) * inStock(b)), 0);
+  const stockCost = bottles.reduce((s, b) => s + ((b.price || 0) * inStock(b)), 0);
+  const appreciation = currentValue - stockCost;
+  const appreciationPct = stockCost > 0 ? (appreciation / stockCost) * 100 : 0;
+
+  const allRatings = consumptions.filter(c => c.rating).map(c => Number(c.rating));
+  const avgScore = allRatings.length ? (allRatings.reduce((a, b) => a + b, 0) / allRatings.length) : null;
+
+  const idealCount = bottles.filter(b => windowStatus(b) === 'ideal' && inStock(b) > 0).reduce((s, b) => s + inStock(b), 0);
+  const pastCount = bottles.filter(b => windowStatus(b) === 'past' && inStock(b) > 0).reduce((s, b) => s + inStock(b), 0);
+
+  // Breakdown by type
+  const byType = {};
+  bottles.forEach(b => {
+    if (!b.type) return;
+    byType[b.type] = (byType[b.type] || 0) + inStock(b);
+  });
+  const byCountry = {};
+  bottles.forEach(b => {
+    if (!b.country) return;
+    byCountry[b.country] = (byCountry[b.country] || 0) + inStock(b);
+  });
+
+  function breakdown(obj) {
+    const entries = Object.entries(obj).filter(([, v]) => v > 0).sort((a, b) => b[1] - a[1]);
+    if (entries.length === 0) return '<div style="color:var(--muted);font-size:13px;padding:8px 0">Sem dados</div>';
+    const max = Math.max(...entries.map(e => e[1]));
+    return `<div class="breakdown-list">${entries.map(([name, count]) => `
+      <div class="breakdown-row">
+        <div class="name">${escapeHtml(name)}</div>
+        <div class="bar-container"><div class="bar" style="width:${(count / max * 100)}%"></div></div>
+        <div class="count">${count}</div>
+      </div>
+    `).join('')}</div>`;
+  }
+
+  document.getElementById('dashboard-content').innerHTML = `
+    <div class="kpi-grid">
+      <div class="kpi">
+        <div class="label">Rótulos</div>
+        <div class="value">${bottles.length}</div>
+        <div class="sub">${totalBottles} garrafas</div>
+      </div>
+      <div class="kpi">
+        <div class="label">Consumidas</div>
+        <div class="value">${totalConsumed}</div>
+        <div class="sub">${consumptions.length} registros</div>
+      </div>
+      <div class="kpi">
+        <div class="label">Investido</div>
+        <div class="value small">${fmtBRL(invested)}</div>
+        <div class="sub">total pago</div>
+      </div>
+      <div class="kpi">
+        <div class="label">Valor atual</div>
+        <div class="value small">${fmtBRL(currentValue)}</div>
+        <div class="sub ${appreciation >= 0 ? 'green' : 'red'}">${appreciation >= 0 ? '+' : ''}${fmtBRL(appreciation)} (${appreciationPct.toFixed(1)}%)</div>
+      </div>
+      <div class="kpi">
+        <div class="label">Nota média</div>
+        <div class="value">${avgScore != null ? avgScore.toFixed(1) : '—'}</div>
+        <div class="sub">${allRatings.length} avaliações</div>
+      </div>
+      <div class="kpi">
+        <div class="label">Janela</div>
+        <div class="value">${idealCount}</div>
+        <div class="sub ${pastCount > 0 ? 'red' : ''}">${pastCount > 0 ? `⚠ ${pastCount} passando` : 'no ponto'}</div>
+      </div>
+    </div>
+    <div class="section-title">Por Tipo</div>
+    <div class="card">${breakdown(byType)}</div>
+    <div class="section-title">Por País</div>
+    <div class="card">${breakdown(byCountry)}</div>
+  `;
+}
+
+function showDetail(id) {
+  const b = bottles.find(x => x.id === id);
+  if (!b) return;
+  const stock = inStock(b);
+  const win = windowStatus(b);
+  const winLabel = { ideal: 'Ideal para beber', young: 'Jovem — guardar', past: 'Passando do ponto' }[win];
+  const rating = avgRating(b.id);
+  const history = consumptions.filter(c => c.bottleId === b.id).sort((a, b) => (b.date || '').localeCompare(a.date || ''));
+
+  document.getElementById('detail-content').innerHTML = `
+    <h2>${escapeHtml(b.producer)} ${b.vintage || ''}</h2>
+    <div style="color:var(--muted);margin:-12px 0 16px;font-size:15px">${escapeHtml(b.label || '')}</div>
+
+    <div class="detail-section">
+      <div class="detail-row"><span class="k">Estoque</span><span class="v"><strong>${stock}</strong> de ${b.qty}</span></div>
+      ${b.type ? `<div class="detail-row"><span class="k">Tipo</span><span class="v">${b.type}</span></div>` : ''}
+      ${b.grape ? `<div class="detail-row"><span class="k">Uva</span><span class="v">${escapeHtml(b.grape)}</span></div>` : ''}
+      ${b.country || b.region ? `<div class="detail-row"><span class="k">Origem</span><span class="v">${escapeHtml([b.region, b.country].filter(Boolean).join(', '))}</span></div>` : ''}
+      ${b.size ? `<div class="detail-row"><span class="k">Tamanho</span><span class="v">${b.size}</span></div>` : ''}
+      ${b.location ? `<div class="detail-row"><span class="k">Local</span><span class="v">${escapeHtml(b.location)}</span></div>` : ''}
+    </div>
+
+    ${b.price || b.current ? `
+    <div class="detail-section">
+      ${b.price ? `<div class="detail-row"><span class="k">Preço pago</span><span class="v">${fmtBRL(b.price)}</span></div>` : ''}
+      ${b.current ? `<div class="detail-row"><span class="k">Valor atual</span><span class="v">${fmtBRL(b.current)}</span></div>` : ''}
+      ${b.price && b.current ? `<div class="detail-row"><span class="k">Valorização</span><span class="v" style="color:${b.current >= b.price ? 'var(--green)' : 'var(--red)'}">${((b.current - b.price) / b.price * 100).toFixed(1)}%</span></div>` : ''}
+      <div class="detail-row"><span class="k">Valor em estoque</span><span class="v">${fmtBRL((b.current || b.price || 0) * stock)}</span></div>
+    </div>
+    ` : ''}
+
+    ${win ? `
+    <div class="detail-section">
+      <div class="detail-row"><span class="k">Janela</span><span class="v"><span class="badge window ${win}">${winLabel}</span></span></div>
+      ${b.drinkFrom ? `<div class="detail-row"><span class="k">Beber de</span><span class="v">${fmtDate(b.drinkFrom)}</span></div>` : ''}
+      ${b.drinkTo ? `<div class="detail-row"><span class="k">Beber até</span><span class="v">${fmtDate(b.drinkTo)}</span></div>` : ''}
+    </div>
+    ` : ''}
+
+    ${rating != null ? `
+    <div class="detail-section">
+      <div class="detail-row"><span class="k">Nota média</span><span class="v"><span class="rating-stars">★ ${rating.toFixed(1)}</span></span></div>
+    </div>
+    ` : ''}
+
+    ${b.notes ? `
+    <div class="detail-section">
+      <div style="font-size:12px;color:var(--muted);font-weight:600;text-transform:uppercase;margin-bottom:6px">Notas</div>
+      <div style="font-size:14px;line-height:1.5">${escapeHtml(b.notes)}</div>
+    </div>
+    ` : ''}
+
+    ${history.length > 0 ? `
+    <div class="section-title">Histórico (${history.length})</div>
+    ${history.map(c => `
+      <div class="history-item">
+        <div class="date">${fmtDate(c.date)} · ${c.qty}x</div>
+        ${c.occasion || c.withWhom ? `<div class="meta">${escapeHtml([c.occasion, c.withWhom].filter(Boolean).join(' · '))}</div>` : ''}
+        ${c.rating ? `<div class="meta"><span class="rating-stars">★ ${c.rating}</span></div>` : ''}
+        ${c.comments ? `<div class="meta">${escapeHtml(c.comments)}</div>` : ''}
+      </div>
+    `).join('')}
+    ` : ''}
+
+    <div class="btn-row">
+      <button class="btn btn-secondary" onclick="closeDetail()">Fechar</button>
+      <button class="btn btn-primary" onclick="openConsume('${b.id}')" ${stock === 0 ? 'disabled style="opacity:0.5"' : ''}>🥂 Consumir</button>
+    </div>
+    <div class="btn-row">
+      <button class="btn btn-secondary" onclick="editBottle('${b.id}')">✏️ Editar</button>
+      <button class="btn btn-danger" onclick="deleteBottle('${b.id}')">🗑️ Excluir</button>
+    </div>
+  `;
+  document.getElementById('modal-detail').classList.add('open');
+}
+
+function closeDetail() { document.getElementById('modal-detail').classList.remove('open'); }
+
+// ============ FORM ============
+function openForm() {
+  editingId = null;
+  document.getElementById('form-title').textContent = 'Novo Vinho';
+  ['f-producer', 'f-label', 'f-vintage', 'f-region', 'f-grape', 'f-price', 'f-current', 'f-drinkfrom', 'f-drinkto', 'f-notes'].forEach(id => document.getElementById(id).value = '');
+  document.getElementById('f-qty').value = 1;
+  document.getElementById('f-type').value = '';
+  document.getElementById('f-country').value = '';
+  document.getElementById('f-size').value = '750ml';
+  document.getElementById('f-location').value = 'Adega Climatizada';
+  document.getElementById('modal-form').classList.add('open');
+}
+
+function editBottle(id) {
+  const b = bottles.find(x => x.id === id);
+  if (!b) return;
+  editingId = id;
+  closeDetail();
+  document.getElementById('form-title').textContent = 'Editar Vinho';
+  document.getElementById('f-producer').value = b.producer || '';
+  document.getElementById('f-label').value = b.label || '';
+  document.getElementById('f-vintage').value = b.vintage || '';
+  document.getElementById('f-type').value = b.type || '';
+  document.getElementById('f-country').value = b.country || '';
+  document.getElementById('f-region').value = b.region || '';
+  document.getElementById('f-grape').value = b.grape || '';
+  document.getElementById('f-size').value = b.size || '750ml';
+  document.getElementById('f-qty').value = b.qty || 1;
+  document.getElementById('f-price').value = b.price || '';
+  document.getElementById('f-current').value = b.current || '';
+  document.getElementById('f-drinkfrom').value = b.drinkFrom || '';
+  document.getElementById('f-drinkto').value = b.drinkTo || '';
+  document.getElementById('f-location').value = b.location || 'Adega Climatizada';
+  document.getElementById('f-notes').value = b.notes || '';
+  document.getElementById('modal-form').classList.add('open');
+}
+
+function closeForm() { document.getElementById('modal-form').classList.remove('open'); }
+
+async function saveBottle() {
+  const producer = document.getElementById('f-producer').value.trim();
+  const label = document.getElementById('f-label').value.trim();
+  if (!producer || !label) { toast('Produtor e rótulo são obrigatórios'); return; }
+  const data = {
+    producer, label,
+    vintage: document.getElementById('f-vintage').value ? Number(document.getElementById('f-vintage').value) : null,
+    type: document.getElementById('f-type').value,
+    country: document.getElementById('f-country').value,
+    region: document.getElementById('f-region').value.trim(),
+    grape: document.getElementById('f-grape').value.trim(),
+    size: document.getElementById('f-size').value,
+    qty: Number(document.getElementById('f-qty').value) || 1,
+    price: document.getElementById('f-price').value ? Number(document.getElementById('f-price').value) : null,
+    current: document.getElementById('f-current').value ? Number(document.getElementById('f-current').value) : null,
+    drinkFrom: document.getElementById('f-drinkfrom').value,
+    drinkTo: document.getElementById('f-drinkto').value,
+    location: document.getElementById('f-location').value,
+    notes: document.getElementById('f-notes').value.trim(),
+  };
+  if (editingId) {
+    const idx = bottles.findIndex(x => x.id === editingId);
+    bottles[idx] = { ...bottles[idx], ...data };
+    toast('Atualizado');
+  } else {
+    bottles.push({ id: uid(), ...data });
+    toast('Vinho adicionado');
+  }
+  await saveData();
+  closeForm();
+  render();
+}
+
+async function deleteBottle(id) {
+  if (!confirm('Excluir este vinho e todo o histórico dele?')) return;
+  bottles = bottles.filter(b => b.id !== id);
+  consumptions = consumptions.filter(c => c.bottleId !== id);
+  await saveData();
+  closeDetail();
+  render();
+  toast('Excluído');
+}
+
+// ============ CONSUME ============
+function openConsume(id) {
+  consumingId = id;
+  const b = bottles.find(x => x.id === id);
+  const stock = inStock(b);
+  document.getElementById('consume-bottle-info').innerHTML = `
+    <div style="font-weight:700;color:var(--wine)">${escapeHtml(b.producer)} ${b.vintage || ''}</div>
+    <div style="font-size:13px;color:var(--muted)">${escapeHtml(b.label)} · ${stock} em estoque</div>
+  `;
+  document.getElementById('c-date').value = new Date().toISOString().slice(0, 10);
+  document.getElementById('c-qty').value = 1;
+  ['c-occasion', 'c-with', 'c-place', 'c-rating', 'c-comments'].forEach(i => document.getElementById(i).value = '');
+  closeDetail();
+  document.getElementById('modal-consume').classList.add('open');
+}
+
+function closeConsume() { document.getElementById('modal-consume').classList.remove('open'); }
+
+async function saveConsume() {
+  const b = bottles.find(x => x.id === consumingId);
+  const qty = Number(document.getElementById('c-qty').value) || 1;
+  const stock = inStock(b);
+  if (qty > stock) { toast(`Apenas ${stock} em estoque`); return; }
+  consumptions.push({
+    id: uid(),
+    bottleId: consumingId,
+    date: document.getElementById('c-date').value,
+    qty,
+    occasion: document.getElementById('c-occasion').value.trim(),
+    withWhom: document.getElementById('c-with').value.trim(),
+    place: document.getElementById('c-place').value.trim(),
+    rating: document.getElementById('c-rating').value ? Number(document.getElementById('c-rating').value) : null,
+    comments: document.getElementById('c-comments').value.trim(),
+  });
+  await saveData();
+  closeConsume();
+  render();
+  toast('Consumo registrado 🥂');
+}
+
+// ============ DATA MGMT ============
+function exportData() {
+  const data = JSON.stringify({ bottles, consumptions, exportedAt: new Date().toISOString() }, null, 2);
+  const blob = new Blob([data], { type: 'application/json' });
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  a.href = url;
+  a.download = `minha-adega-${new Date().toISOString().slice(0, 10)}.json`;
+  a.click();
+  URL.revokeObjectURL(url);
+  toast('Backup exportado');
+}
+
+async function importData(event) {
+  const file = event.target.files[0];
+  if (!file) return;
+  try {
+    const text = await file.text();
+    const data = JSON.parse(text);
+    if (Array.isArray(data.bottles)) bottles = data.bottles;
+    if (Array.isArray(data.consumptions)) consumptions = data.consumptions;
+    await saveData();
+    render();
+    toast('Dados importados');
+  } catch (e) {
+    toast('Erro ao importar');
+  }
+  event.target.value = '';
+}
+
+async function clearAll() {
+  if (!confirm('Apagar TODOS os dados? Esta ação não pode ser desfeita.')) return;
+  bottles = []; consumptions = [];
+  await saveData();
+  render();
+  toast('Dados apagados');
+}
+
+// ============ UI ============
+function toast(msg) {
+  const t = document.getElementById('toast');
+  t.textContent = msg;
+  t.classList.add('show');
+  setTimeout(() => t.classList.remove('show'), 2000);
+}
+
+function escapeHtml(s) {
+  if (s == null) return '';
+  return String(s).replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' })[c]);
+}
+
+// Tabs
+document.querySelectorAll('nav.tabs button').forEach(btn => {
+  btn.addEventListener('click', () => {
+    document.querySelectorAll('nav.tabs button').forEach(b => b.classList.remove('active'));
+    btn.classList.add('active');
+    document.querySelectorAll('.view').forEach(v => v.classList.remove('active'));
+    document.getElementById('view-' + btn.dataset.view).classList.add('active');
+    document.getElementById('fab').style.display = btn.dataset.view === 'cellar' ? 'block' : 'none';
+    updateHeader();
+  });
+});
+
+// Search
+document.getElementById('search').addEventListener('input', e => {
+  searchTerm = e.target.value;
+  renderCellar();
+});
+
+// Filter pills
+document.querySelectorAll('.filter-pills .pill').forEach(pill => {
+  pill.addEventListener('click', () => {
+    document.querySelectorAll('.filter-pills .pill').forEach(p => p.classList.remove('active'));
+    pill.classList.add('active');
+    currentFilter = pill.dataset.filter;
+    renderCellar();
+  });
+});
+
+// Close modals on backdrop click
+document.querySelectorAll('.modal-backdrop').forEach(m => {
+  m.addEventListener('click', e => {
+    if (e.target === m) m.classList.remove('open');
+  });
+});
+
+loadData();
+</script>
+
+</body>
+</html>
